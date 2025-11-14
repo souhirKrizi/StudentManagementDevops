@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        SONARQUBE_SERVER = 'SonarQube' // Adapter ce nom si différent dans Jenkins
+        SONARQUBE_SERVER = 'sonar_credentials' // Adapter ce nom si différent dans Jenkins
     }
     stages {
         stage('Checkout') {
