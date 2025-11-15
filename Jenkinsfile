@@ -1,11 +1,10 @@
 pipeline {
     agent any
     
-    tools {
+     tools {
         maven 'M3'
-        jdk 'jdk17' // Assurez-vous que ce nom correspond à votre JDK configuré dans Jenkins
+        jdk 'jdk17'
     }
-    
     environment {
         // Configuration SonarQube
         SONAR_SCANNER_OPTS = "-Dsonar.projectKey=student-management"
