@@ -8,6 +8,8 @@ pipeline {
     environment {
         // Configuration SonarQube
         SONAR_SCANNER_OPTS = "-Dsonar.projectKey=student-management"
+        SONAR_AUTH_TOKEN = credentials('sonar-token')
+
     }
     
     stages {
