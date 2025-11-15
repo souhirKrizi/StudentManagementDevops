@@ -1,16 +1,16 @@
 pipeline {
     agent any
     
-     tools {
+    tools {
         maven 'M3'
         jdk 'jdk17'
     }
+    
     environment {
         // Configuration SonarQube
         SONAR_SCANNER_OPTS = "-Dsonar.projectKey=student-management"
         SONAR_AUTH_TOKEN = credentials('sonar-token')
-        SONAR_HOST_URL = 'http://localhost:9000'  // Remplacez par votre URL SonarQube
-
+        SONAR_HOST_URL = 'http://localhost:9000'
     }
     
     stages {
@@ -18,7 +18,7 @@ pipeline {
             steps {
                 git branch: 'main', 
                 url: 'https://github.com/souhirKrizi/StudentManagementDevops.git',
-                credentialsId: 'github-credentials' // À configurer dans Jenkins
+                credentialsId: 'github-credentials'
             }
         }
         
@@ -28,21 +28,21 @@ pipeline {
             }
         }
         
-       stage('SonarQube Analysis') {
-    steps {
-        withSonarQubeEnv('SonarQube') {
-            sh 'mvn sonar:sonar ' +
-               '-Dsonar.projectKey=student-management ' +
-               '-Dsonar.host.url=${SONAR_HOST_URL} ' +
-               '-Dsonar.login=${SONAR_AUTH_TOKEN} ' +
-               '-Dsonar.java.binaries=target/classes'
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn sonar:sonar ' +
+                       '-Dsonar.projectKey=student-management ' +
+                       '-Dsonar.host.url=${SONAR_HOST_URL} ' +
+                       '-Dsonar.login=${SONAR_AUTH_TOKEN} ' +
+                       '-Dsonar.java.binaries=target/classes'
+                }
+            }
         }
     }
-}
     
     post {
         always {
-            // Nettoyage de l'espace de travail
             cleanWs()
         }
         success {
@@ -52,5 +52,4 @@ pipeline {
             echo 'Échec du pipeline. Veuillez vérifier les logs pour plus de détails.'
         }
     }
-}
 }
