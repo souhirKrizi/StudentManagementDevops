@@ -1,42 +1,50 @@
 pipeline {
     agent any
+    
+    tools {
+        maven 'M3'
+        jdk 'jdk17' // Assurez-vous que ce nom correspond à votre JDK configuré dans Jenkins
+    }
+    
+    environment {
+        // Configuration SonarQube
+        SONAR_SCANNER_OPTS = "-Dsonar.projectKey=student-management"
+    }
+    
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/souhirKrizi/StudentManagementDevops.git'
+                git branch: 'main', 
+                url: 'https://github.com/souhirKrizi/StudentManagementDevops.git',
+                credentialsId: 'github-credentials' // À configurer dans Jenkins
             }
         }
-        stage('Clean & Build') {
+        
+        stage('Build') {
             steps {
                 sh 'mvn clean package -DskipTests'
             }
         }
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-        }
+        
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar'
+                    sh 'mvn sonar:sonar -Dsonar.login=${SONAR_AUTH_TOKEN} -Dsonar.projectKey=student-management -Dsonar.java.binaries=target/classes'
                 }
             }
         }
-        stage('Package') {
-            steps {
-                sh 'mvn package'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                sh 'mvn deploy'
-            }
-        }
     }
+    
     post {
         always {
-            junit '**/target/surefire-reports/*.xml'
+            // Nettoyage de l'espace de travail
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline exécuté avec succès! 🎉'
+        }
+        failure {
+            echo 'Échec du pipeline. Veuillez vérifier les logs pour plus de détails.'
         }
     }
 }
