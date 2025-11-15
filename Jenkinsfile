@@ -9,6 +9,7 @@ pipeline {
         // Configuration SonarQube
         SONAR_SCANNER_OPTS = "-Dsonar.projectKey=student-management"
         SONAR_AUTH_TOKEN = credentials('sonar-token')
+        SONAR_HOST_URL = 'http://localhost:9000'  // Remplacez par votre URL SonarQube
 
     }
     
@@ -27,14 +28,17 @@ pipeline {
             }
         }
         
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar -Dsonar.login=${SONAR_AUTH_TOKEN} -Dsonar.projectKey=student-management -Dsonar.java.binaries=target/classes'
-                }
-            }
+       stage('SonarQube Analysis') {
+    steps {
+        withSonarQubeEnv('SonarQube') {
+            sh 'mvn sonar:sonar ' +
+               '-Dsonar.projectKey=student-management ' +
+               '-Dsonar.host.url=${SONAR_HOST_URL} ' +
+               '-Dsonar.login=${SONAR_AUTH_TOKEN} ' +
+               '-Dsonar.java.binaries=target/classes'
         }
     }
+}
     
     post {
         always {
