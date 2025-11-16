@@ -28,6 +28,18 @@ pipeline {
             }
         }
         
+        stage('Tests') {
+            steps {
+                script {
+                    def status = sh(script: 'mvn test', returnStatus: true)
+                    if (status != 0) {
+                        currentBuild.result = 'FAILURE'
+                        error('Les tests ont échoué !')
+                    }
+                }
+            }
+        }
+        
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
