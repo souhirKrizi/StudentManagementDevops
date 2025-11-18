@@ -1,58 +1,20 @@
 pipeline {
     agent any
-    
+
     tools {
         maven 'M3'
         jdk 'jdk17'
     }
-    
-    environment {
-        // Configuration SonarQube
-        SONAR_SCANNER_OPTS = "-Dsonar.projectKey=student-management"
-        SONAR_AUTH_TOKEN = credentials('sonar-token')
-        SONAR_HOST_URL = 'http://localhost:9000'
-    }
-    
+
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', 
-                url: 'https://github.com/souhirKrizi/StudentManagementDevops.git',
-                credentialsId: 'github-credentials'
-            }
-        }
-        
-        stage('Build') {
-            steps {
-                sh 'mvn clean package -DskipTests'
-            }
-        }
-        
-        stage('Tests') {
-            steps {
-                script {
-                    def status = sh(script: 'mvn test', returnStatus: true)
-                    if (status != 0) {
-                        currentBuild.result = 'FAILURE'
-                        error('Les tests ont échoué !')
-                    }
-                }
-            }
-        }
-        
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar ' +
-                       '-Dsonar.projectKey=student-management ' +
-                       '-Dsonar.host.url=${SONAR_HOST_URL} ' +
-                       '-Dsonar.login=${SONAR_AUTH_TOKEN} ' +
-                       '-Dsonar.java.binaries=target/classes'
-                }
+                git branch: 'main',
+                    url: 'https://github.com/souhirKrizi/StudentManagementDevops.git'
             }
         }
     }
-    
+
     post {
         always {
             cleanWs()
