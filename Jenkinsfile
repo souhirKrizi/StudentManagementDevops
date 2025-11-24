@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('docker-hub-credentials')
+        DOCKERHUB_CREDENTIALS = credentials('StudentManagement')
         DOCKER_IMAGE = 'souhirkrizi2002/studentmanagement'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
     }
