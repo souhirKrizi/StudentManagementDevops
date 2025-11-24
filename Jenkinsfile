@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('StudentManagement')
         DOCKER_IMAGE = 'souhirkrizi2002/studentmanagement'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
     }
@@ -37,14 +36,17 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build and Push Docker Image') {
+            environment {
+                DOCKER_CREDS = credentials('StudentManagement')
+            }
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                        def customImage = docker.build("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}")
-                        customImage.push()
-                        customImage.push('latest')
-                    }
+                    sh "docker build -t ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} ."
+                    sh "echo ${DOCKER_CREDS_PSW} | docker login -u ${DOCKER_CREDS_USR} --password-stdin"
+                    sh "docker tag ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} ${env.DOCKER_IMAGE}:latest"
+                    sh "docker push ${env.DOCKER_IMAGE}:${env.DOCKER_TAG}"
+                    sh "docker push ${env.DOCKER_IMAGE}:latest"
                 }
             }
         }
