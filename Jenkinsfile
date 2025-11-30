@@ -50,22 +50,7 @@ pipeline {
                     junit '**/target/surefire-reports/**/*.xml'
                 }
             }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {  
-                    sh "mvn sonar:sonar \
-                        -Dsonar.projectKey=student-management \
-                        -Dsonar.projectName='Student Management' \
-                        -Dsonar.host.url=${SONAR_HOST_URL} \
-                        -Dsonar.login=${SONAR_AUTH_TOKEN} \
-                        -Dsonar.java.binaries=target/classes \
-                        -Dsonar.java.libraries=target/**/*.jar"
-                }
-            }
-        }
-        
+        }     
         stage('Build and Push Docker Image') {
             environment {
                 DOCKER_CREDS = credentials('StudentManagement')
@@ -77,6 +62,20 @@ pipeline {
                     sh "docker tag ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} ${env.DOCKER_IMAGE}:latest"
                     sh "docker push ${env.DOCKER_IMAGE}:${env.DOCKER_TAG}"
                     sh "docker push ${env.DOCKER_IMAGE}:latest"
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {  
+                    sh "mvn sonar:sonar \
+                        -Dsonar.projectKey=student-management \
+                        -Dsonar.projectName='Student Management' \
+                        -Dsonar.host.url=${SONAR_HOST_URL} \
+                        -Dsonar.token=${SONAR_AUTH_TOKEN} \
+                        -Dsonar.java.binaries=target/classes \
+                        -Dsonar.java.libraries=target/**/*.jar \
+                        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml"
                 }
             }
         }
