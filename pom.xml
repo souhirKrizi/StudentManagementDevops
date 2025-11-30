@@ -111,11 +111,6 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/*Application.class</exclude>
-                        <exclude>**/dto/*.class</exclude>
-                        <exclude>**/config/*.class</exclude>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -131,6 +126,13 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*Application.class</exclude>
+                        <exclude>**/dto/*.class</exclude>
+                        <exclude>**/config/*.class</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
