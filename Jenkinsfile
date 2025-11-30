@@ -11,7 +11,6 @@ pipeline {
     tools {
         maven 'M3'
         jdk 'jdk17'
-        sonarQubeScanner 'SonarQubeScanner'  
     }
 
     stages {
