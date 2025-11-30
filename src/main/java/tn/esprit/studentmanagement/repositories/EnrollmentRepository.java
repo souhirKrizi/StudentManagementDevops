@@ -6,4 +6,5 @@ import tn.esprit.studentmanagement.entities.Enrollment;
 
 @Repository
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
-    
+    // Ajoutez ici des méthodes personnalisées si nécessaire
+}
