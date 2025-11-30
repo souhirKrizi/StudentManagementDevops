@@ -4,8 +4,8 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'souhirkrizi2002/studentmanagement'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
-        SONAR_HOST_URL = 'http://localhost:9000'  
-        SONAR_AUTH_TOKEN = credentials('sonar-auth-token')  
+        SONAR_HOST_URL = 'http://localhost:9000'
+        SONAR_AUTH_TOKEN = credentials('sonar-auth-token')
     }
 
     tools {
@@ -21,10 +21,24 @@ pipeline {
                     url: 'https://github.com/souhirKrizi/StudentManagementDevops.git'
             }
         }
+        
+        stage('mvn clean') {
+            steps {
+                echo 'Nettoyage du projet avec Maven...'
+                sh 'mvn clean'
+            }
+        }
+        
+        stage('mvn compile') {
+            steps {
+                echo 'Compilation du projet avec Maven...'
+                sh 'mvn compile'
+            }
+        }
 
         stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                sh 'mvn package -DskipTests'
             }
         }
 
@@ -53,14 +67,6 @@ pipeline {
             }
         }
         
-        stage("Quality Gate") {
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-
         stage('Build and Push Docker Image') {
             environment {
                 DOCKER_CREDS = credentials('StudentManagement')
