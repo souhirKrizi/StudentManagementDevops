@@ -4,11 +4,14 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'souhirkrizi2002/studentmanagement'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
+        SONAR_HOST_URL = 'http://localhost:9000'  
+        SONAR_AUTH_TOKEN = credentials('sonar-auth-token')  
     }
 
     tools {
         maven 'M3'
         jdk 'jdk17'
+        sonarQubeScanner 'SonarQubeScanner'  
     }
 
     stages {
@@ -29,7 +32,33 @@ pipeline {
             steps {
                 sh 'mvn test'
             }
-            
+            post {
+                always {
+                    junit '**/target/surefire-reports/**/*.xml'
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {  
+                    sh "mvn sonar:sonar \
+                        -Dsonar.projectKey=student-management \
+                        -Dsonar.projectName='Student Management' \
+                        -Dsonar.host.url=${SONAR_HOST_URL} \
+                        -Dsonar.login=${SONAR_AUTH_TOKEN} \
+                        -Dsonar.java.binaries=target/classes \
+                        -Dsonar.java.libraries=target/**/*.jar"
+                }
+            }
+        }
+        
+        stage("Quality Gate") {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
         }
 
         stage('Build and Push Docker Image') {
