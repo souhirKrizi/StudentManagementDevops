@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class StudentControllerTest {
+class StudentControllerTest {
 
     private MockMvc mockMvc;
 
@@ -33,13 +33,13 @@ public class StudentControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(studentController).build();
     }
 
     @Test
-    public void testGetAllStudents() throws Exception {
+    void testGetAllStudents() throws Exception {
         // Given
         Student student1 = new Student("john.doe@example.com", "John", "Doe");
         student1.setIdStudent(1L);
@@ -65,7 +65,7 @@ public class StudentControllerTest {
     }
 
     @Test
-    public void testGetStudentById() throws Exception {
+    void testGetStudentById() throws Exception {
         // Given
         Student student = new Student("john.doe@example.com", "John", "Doe");
         student.setIdStudent(1L);
@@ -85,7 +85,7 @@ public class StudentControllerTest {
     }
 
     @Test
-    public void testCreateStudent() throws Exception {
+    void testCreateStudent() throws Exception {
         // Given
         Student student = new Student("john.doe@example.com", "John", "Doe");
         student.setIdStudent(1L);
@@ -107,7 +107,7 @@ public class StudentControllerTest {
     }
 
     @Test
-    public void testUpdateStudent() throws Exception {
+    void testUpdateStudent() throws Exception {
         // Given
         Student student = new Student("john.doe@example.com", "John", "Doe");
         student.setIdStudent(1L);
@@ -127,7 +127,7 @@ public class StudentControllerTest {
     }
 
     @Test
-    public void testDeleteStudent() throws Exception {
+    void testDeleteStudent() throws Exception {
         // Given
         doNothing().when(studentService).deleteStudent(1L);
 
