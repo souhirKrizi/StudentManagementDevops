@@ -36,7 +36,7 @@
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <mockito.version>5.17.0</mockito.version>
         <byte-buddy.version>1.17.7</byte-buddy.version>
-        <argLine>-Dfile.encoding=UTF-8</argLine>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -121,6 +121,11 @@
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <propertyName>surefire.argLine</propertyName>
+                            <destFile>${project.build.directory}/jacoco.exec</destFile>
+                            <append>true</append>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>report</id>
@@ -128,6 +133,9 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>target/site/jacoco</outputDirectory>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>report-aggregate</id>
@@ -145,6 +153,8 @@
                         <exclude>**/*Application.class</exclude>
                         <exclude>**/dto/*.class</exclude>
                         <exclude>**/config/*.class</exclude>
+                        <exclude>**/exception/*.class</exclude>
+                        <exclude>**/model/*.class</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -175,14 +185,19 @@
                 <version>3.2.3</version>
                 <configuration>
                     <argLine>
+                        ${surefire.argLine}
                         -Xshare:off
                         --enable-native-access=ALL-UNNAMED
                         -Dfile.encoding=UTF-8
                         -Dsun.stdout.encoding=UTF-8
                         -Dsun.stderr.encoding=UTF-8
                         -javaagent:${settings.localRepository}/net/bytebuddy/byte-buddy-agent/${byte-buddy.version}/byte-buddy-agent-${byte-buddy.version}.jar
-                        ${argLine}
                     </argLine>
+                    <systemPropertyVariables>
+                        <file.encoding>UTF-8</file.encoding>
+                    </systemPropertyVariables>
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                    <useManifestOnlyJar>false</useManifestOnlyJar>
                 </configuration>
                 <dependencies>
                     <dependency>
