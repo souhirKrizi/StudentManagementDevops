@@ -1,43 +1,32 @@
-# 1. PersistentVolume (PV)
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: mysql-pv
-  labels:
-    type: local
 spec:
-  storageClassName: manual
   capacity:
-    storage: 2Gi
+    storage: 1Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/data/mysql"
+    path: "/data/mysql"
 
 ---
-# 2. PersistentVolumeClaim (PVC)
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pvc
-  namespace: devops
 spec:
-  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 1Gi
 
 ---
-# 3. Deployment MySQL
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
-  namespace: devops
-  labels:
-    app: mysql
 spec:
   replicas: 1
   selector:
@@ -51,18 +40,13 @@ spec:
       containers:
         - name: mysql
           image: mysql:8.0
-          resources:
-            requests:
-              memory: "512Mi"
-              cpu: "500m"
-            limits:
-              memory: "1Gi"
-              cpu: "1000m"
           env:
             - name: MYSQL_ALLOW_EMPTY_PASSWORD
               value: "yes"
+            - name: MYSQL_ROOT_PASSWORD
+              value: ""
             - name: MYSQL_DATABASE
-              value: "studentdb"
+              value: studentdb
           ports:
             - containerPort: 3306
           volumeMounts:
@@ -74,12 +58,10 @@ spec:
             claimName: mysql-pvc
 
 ---
-# 4. Service MySQL (ClusterIP)
 apiVersion: v1
 kind: Service
 metadata:
   name: mysql-service
-  namespace: devops
 spec:
   selector:
     app: mysql
